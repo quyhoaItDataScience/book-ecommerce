@@ -1,6 +1,10 @@
 import { toast } from "react-toastify";
 import axiosClient from "./axiosClient";
 
+const tokenFromLs = localStorage.getItem("token")
+  ? JSON.parse(localStorage.getItem("token"))
+  : null;
+
 const userApi = {
   updateImage: async (userId, payload) => {
     try {
@@ -31,6 +35,28 @@ const userApi = {
   getUser: async (userId) => {
     try {
       const response = await axiosClient.get(`/user/${userId}`);
+      return response;
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  getUsersForAdmin: async () => {
+    try {
+      const response = await axiosClient.get(`/user/admin`);
+      return response;
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  verifyUser: async () => {
+    try {
+      const response = await axiosClient.get(`/user/verify-user`, {
+        headers: {
+          Authorization: `Bearer ${tokenFromLs}`,
+          "content-type": "application/json",
+        },
+      });
+      console.log(response);
       return response;
     } catch (err) {
       console.log(err);

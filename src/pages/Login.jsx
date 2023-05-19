@@ -11,7 +11,7 @@ import { useAuthCtx } from "../context/AuthContext";
 import { useFormik } from "formik";
 
 export default function Login() {
-  const { setUser: setAuth, token, setToken } = useAuthCtx();
+  const { user, setUser: setAuth } = useAuthCtx();
   const navigate = useNavigate();
 
   const formik = useFormik({
@@ -25,17 +25,16 @@ export default function Login() {
         password: values.password,
       });
       setAuth(res.user);
-      localStorage.setItem("token", res.token);
-      setToken(res.token);
+      localStorage.setItem("token", JSON.stringify(res.token));
       navigate("/", { replace: true });
     },
   });
 
   React.useEffect(() => {
-    if (token) {
+    if (user) {
       navigate("/", { replace: true });
     }
-  }, [token]);
+  }, [user]);
 
   return (
     <Box

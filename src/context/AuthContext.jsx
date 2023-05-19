@@ -1,25 +1,45 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import authApi from "../api/authApi";
-import axiosClient from "../api/axiosClient";
+import jwtDecode from "jwt-decode";
+import userApi from "../api/userApi";
+import { toast } from "react-toastify";
 
 const AuthContext = createContext();
 
 const tokenFromLs = () => {
-  return localStorage.getItem("token");
+  return localStorage.getItem("token")
+    ? JSON.parse(localStorage.getItem("token"))
+    : "";
 };
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(tokenFromLs);
   const [user, setUser] = useState(null);
   const [isLogged, setIsLogged] = useState(false);
-  console.log(token);
+  useEffect(() => {
+    const getUser = async () => {
+      if (tokenFromLs()) {
+        try {
+          const user = await userApi.verifyUser();
+
+          if (user) {
+            setUser(user);
+          } else {
+            toast.error("Cannot verify");
+          }
+        } catch (err) {
+          toast.error("someting wrong");
+        }
+      }
+    };
+    getUser();
+  }, []);
 
   const logout = () => {
     localStorage.removeItem("token");
-    setToken("");
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, token, setToken, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

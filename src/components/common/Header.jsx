@@ -24,7 +24,7 @@ import { useAuthCtx } from "../../context/AuthContext";
 function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
   const { cartItems } = useCartContext();
-  const { token, logout } = useAuthCtx();
+  const { user, logout } = useAuthCtx();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -73,7 +73,7 @@ function Header() {
           {/* <SearchInput /> */}
           <Box>
             <Button>
-              <Badge badgeContent={cartItems.length} color="secondary">
+              <Badge badgeContent={cartItems.length} showZero color="secondary">
                 <ShoppingCartIcon
                   color="warning"
                   onClick={() => handleNavigate("/cart")}
@@ -82,6 +82,9 @@ function Header() {
             </Button>
             <IconButton onClick={handleClick}>
               <PersonIcon color="error" />
+              <Typography variant="body1" color="white">
+                {user?.username}
+              </Typography>
             </IconButton>
             <Menu
               anchorEl={anchorEl}
@@ -98,7 +101,7 @@ function Header() {
                 Đơn hàng
               </MenuItem>
             </Menu>
-            {token && (
+            {user && (
               <Button
                 color="inherit"
                 onClick={() => {

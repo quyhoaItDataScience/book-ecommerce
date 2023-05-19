@@ -110,7 +110,41 @@ module.exports = {
   },
   getProducts: async (req, res) => {
     const { page, category } = req.query;
+    const find = await Product.aggregate([
+      {
+        $lookup: {
+          from: "categories",
+          let: { categoryId: "$category" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$$categoryId", "$_id"] },
+                    { $eq: ["$name", category] },
+                  ],
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+              },
+            },
+          ],
+          as: "categoryDetails",
+        },
+      },
+      {
+        $match: {
+          categoryDetails: { $ne: [] },
+        },
+      },
+    ]).skip(1);
 
+    res.json(find);
+    return;
     const pageSize = 2;
 
     const totalProducts = await Product.countDocuments();
@@ -130,8 +164,64 @@ module.exports = {
       totalPages: totalPages,
     });
   },
+  getProductsByCategory: async (req, res) => {
+    const { categorySlug } = req.params;
+    const find = await Product.aggregate([
+      {
+        $lookup: {
+          from: "categories",
+          let: { categoryId: "$category" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$$categoryId", "$_id"] },
+                    { $eq: ["$slug", categorySlug] },
+                  ],
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+              },
+            },
+          ],
+          as: "categoryDetails",
+        },
+      },
+      {
+        $match: {
+          categoryDetails: { $ne: [] },
+        },
+      },
+    ]);
+
+    res.status(200).json(find);
+  },
   getProductsForAdmin: async (req, res) => {
     const products = await Product.find().populate("images");
     res.status(200).json(products);
+  },
+  getProductById: async (req, res) => {
+    const products = await Product.findById(req.params.productId).populate(
+      "images"
+    );
+    res.status(200).json(products);
+  },
+  updateProductById: async (req, res) => {
+    const { productId } = req.params;
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      {
+        $set: {
+          ...req.body,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({ data: product, msg: "Successfully" });
   },
 };

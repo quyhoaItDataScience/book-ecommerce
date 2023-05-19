@@ -10,6 +10,7 @@ export function formatVND(value) {
 }
 
 export function formatPrice(priceStr) {
+  priceStr = `${priceStr}`;
   if (priceStr === "") return "";
   const res = parseFloat(priceStr.replace(/,/g, ""));
 

@@ -1,11 +1,16 @@
+const Product = require("../models/Product");
 const Category = require("../models/category");
-
+const slugify = require("slugify");
 // Create a new category
 const createCategory = async (req, res) => {
   try {
-    const category = new Category(req.body);
+    const { name } = req.body;
+    const category = new Category({
+      name: name,
+      slug: slugify(name),
+    });
     await category.save();
-    res.status(201).json(category);
+    res.status(201).json({ data: category, msg: "Successfully" });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -64,7 +69,7 @@ const updateCategoryById = async (req, res) => {
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
     }
-    res.status(200).json(category);
+    res.status(200).json({ data: category, msg: "Updated successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -74,10 +79,19 @@ const updateCategoryById = async (req, res) => {
 const deleteCategoryById = async (req, res) => {
   try {
     const category = await Category.findByIdAndDelete(req.params.id);
+    const productsWithCategory = await Product.find({ category: category._id });
+    if (productsWithCategory) {
+      productsWithCategory.forEach((products) => {
+        products.category = "";
+      });
+      await productsWithCategory.save();
+    }
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
     }
-    res.status(204).end();
+    res.status(204).json({
+      msg: `Deleted ${category.name} successfully`,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

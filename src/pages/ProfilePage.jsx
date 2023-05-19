@@ -19,22 +19,8 @@ const avatarImage = "https://mui.com/static/images/avatar/1.jpg";
 
 function ProfilePage() {
   const { token } = useAuthCtx();
-  const [user, setUser] = useState();
+  const { user } = useAuthCtx();
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const { id: userId } = jwtDecode(token);
-        const res = await userApi.getUser(userId);
-        setUser(res);
-        console.log(user);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getUser();
-  }, []);
 
   const validationSchema = yup.object({
     name: yup.string("Nhập tên"),
@@ -99,7 +85,7 @@ function ProfilePage() {
         >
           <Avatar
             alt="Profile Image"
-            src={user?.profileImage.imageUrl ?? avatarImage}
+            src={user?.profileImage?.imageUrl ?? avatarImage}
             sx={{ width: 120, height: 120 }}
           />
           <Box display="flex" flexDirection="column" gap="10px">

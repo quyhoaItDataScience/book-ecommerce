@@ -13,9 +13,18 @@ function Cart() {
         {cartItems?.map((cartItem, idx) => (
           <CartProduct key={idx} cartItem={cartItem} />
         ))}
-        {cartItems.length && (
+        {cartItems.length > 0 ? (
           <Box textAlign={"right"} my={3}>
             <Button onClick={clearCart}>Xoá giỏ hàng</Button>
+          </Box>
+        ) : (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+          >
+            <Typography variant="h4">Giỏ hàng trống</Typography>
           </Box>
         )}
       </Grid>

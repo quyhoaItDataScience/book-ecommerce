@@ -8,22 +8,22 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { Button } from "@mui/material";
+import userApi from "../../api/userApi";
 
 const columns = [
   { id: "name", label: "Tên", minWidth: 100 },
   {
-    id: "orderNums",
+    id: "orderCount",
     label: "Số đơn hàng",
     minWidth: 30,
     align: "right",
     format: (value) => value.toLocaleString("en-US"),
   },
   {
-    id: "paidPrice",
-    label: "Tổng tiền thanh toán",
+    id: "imageUrl",
+    label: "Avatar",
     minWidth: 100,
     align: "right",
-    format: (value) => value.toLocaleString("en-US"),
   },
   {
     id: "ipAddress",
@@ -54,6 +54,15 @@ const rows = [
 export default function StickyHeadTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [users, setUsers] = React.useState([]);
+
+  React.useEffect(() => {
+    const getUsers = async () => {
+      const res = await userApi.getUsersForAdmin();
+      setUsers(res);
+    };
+    getUsers();
+  }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -64,8 +73,10 @@ export default function StickyHeadTable() {
     setPage(0);
   };
 
-  const handleClick = (row) => {
-    console.log("row", row);
+  const handleDelete = (row) => {
+    const newUsers = users.filter((user) => user._id !== row._id);
+    setUsers(newUsers);
+    // call api delete user
   };
 
   return (
@@ -87,14 +98,14 @@ export default function StickyHeadTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
+            {users
+              ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              ?.map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row._id}>
+                    {columns.map((column, idx) => {
                       const value = row[column.id];
-                      console.log(column.id);
+                      console.log(value);
                       return (
                         <>
                           <TableCell key={column.id} align={column.align}>
@@ -106,7 +117,7 @@ export default function StickyHeadTable() {
                       );
                     })}
                     <TableCell id="actions">
-                      <Button onClick={() => handleClick(row)}>Xoá</Button>
+                      <Button onClick={() => handleDelete(row)}>Xoá</Button>
                     </TableCell>
                   </TableRow>
                 );

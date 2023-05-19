@@ -3,9 +3,9 @@ import { Navigate } from "react-router-dom";
 import { useAuthCtx } from "../context/AuthContext";
 
 function ProtectedRoute({ children }) {
-  const { token } = useAuthCtx();
+  const { user } = useAuthCtx();
 
-  if (!token) {
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 

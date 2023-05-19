@@ -31,7 +31,7 @@ function Categories({ setCategory }) {
             <ListItem>
               <ListItemText
                 onClick={() => {
-                  // setCategory(cate._id);
+                  setCategory(cate.name);
                   console.log(cate.name);
                 }}
                 primary={cate.name}

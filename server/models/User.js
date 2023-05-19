@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  ipAddress: {
+    type: String,
+    default: "0.0.0.0",
+  },
 });
 
 const User = mongoose.model("User", userSchema);

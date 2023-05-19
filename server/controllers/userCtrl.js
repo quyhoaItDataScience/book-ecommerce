@@ -37,6 +37,10 @@ module.exports = {
     );
     res.status(200).json(user);
   },
+  verifyUser: async (req, res) => {
+    const user = await User.findById(req.user);
+    res.status(200).json(user);
+  },
   deleteAll: async (req, res) => {
     await User.deleteMany();
     res.json({ msg: "Deleted All" });

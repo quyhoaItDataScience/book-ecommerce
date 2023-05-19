@@ -6,11 +6,14 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
-
+import productApi from "../api/productApi";
+import { useLocation } from "react-router-dom";
+import { formatPrice } from "../utils/helper";
+import { useCartContext } from "../context/CartContext";
 const productImg = [
   "https://product.hstatic.net/200000211451/product/ef47b163-b8f1-4b89-b17e-9536568e8522_75a2b198db57405ba752b4508349d3b8_master.jpg",
   "https://product.hstatic.net/200000211451/product/8c4afe07-161b-4bf1-aacf-1a57b6bed986_690ba44fd025449abee5a6a40df659be_small.jpg",
@@ -21,7 +24,17 @@ const productImg = [
 ];
 function ProductDetail() {
   const [activeThumb, setActiveThumb] = useState(0);
-
+  const [product, setProduct] = useState();
+  const { pathname } = useLocation();
+  const { addToCart } = useCartContext();
+  useEffect(() => {
+    const getProduct = async () => {
+      const productId = pathname.split("/")[2];
+      const res = await productApi.getBookById(productId);
+      setProduct(res);
+    };
+    getProduct();
+  }, []);
   return (
     <Container>
       <Grid container>
@@ -57,7 +70,7 @@ function ProductDetail() {
               }}
             >
               {productImg.map((item, idx) => (
-                <SwiperSlide onClick={() => setActiveThumb(idx)}>
+                <SwiperSlide key={idx} onClick={() => setActiveThumb(idx)}>
                   <img
                     src={item}
                     alt="product image"
@@ -72,10 +85,10 @@ function ProductDetail() {
           </Box>
         </Grid>
         <Grid item sm={12} md={8} my={5}>
-          <Typography variant="h4">Clean code</Typography>
+          <Typography variant="h4">{product?.name}</Typography>
           <Box display="flex" gap="20px" mt={3} alignItems="center">
             <Typography variant="h6" color="primary.main">
-              200,000VND
+              {product?.price && formatPrice(product?.price.toString())}VND
             </Typography>
             <Typography
               variant="caption"
@@ -87,7 +100,7 @@ function ProductDetail() {
             </Typography>
           </Box>
           <Box mt={3}>
-            <Button variant="contained" onClick={() => addToCart()}>
+            <Button variant="contained" onClick={() => addToCart(product)}>
               Thêm vào giỏ
             </Button>
           </Box>
@@ -97,7 +110,7 @@ function ProductDetail() {
         <Typography>Mô tả sản phẩm</Typography>
         <Divider />
         <Box my={3}>
-          <Typography>Sản phẩm rất chất lượng</Typography>
+          <Typography>{product?.description}</Typography>
         </Box>
       </Box>
     </Container>

@@ -11,6 +11,7 @@ import orderApi from "../api/orderApi";
 import { useAuthCtx } from "../context/AuthContext";
 import jwtDecode from "jwt-decode";
 import moment from "moment";
+import { formatPrice } from "../utils/helper";
 
 function createData(date, status, price) {
   return { date, status, price };
@@ -31,11 +32,10 @@ const images = [
 
 export default function OrderListPage() {
   const [orders, setOrders] = React.useState([]);
-  const { token } = useAuthCtx();
-  const { id: userId } = jwtDecode(token);
+  const { user } = useAuthCtx();
   React.useEffect(() => {
     const getOrders = async () => {
-      const res = await orderApi.getOrdersByUser(userId);
+      const res = await orderApi.getOrdersByUser(user?._id);
       console.log(res);
       setOrders(res);
     };
@@ -45,8 +45,8 @@ export default function OrderListPage() {
   return (
     <Container>
       <Box marginY="20px">
-        <Box marginY="20px">
-          <Typography variant="h5">Đơn hàng đã đặt</Typography>
+        <Box marginY="20px" textAlign="center">
+          <Typography variant="h4">Đơn hàng đã đặt</Typography>
         </Box>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -80,7 +80,7 @@ export default function OrderListPage() {
                     </AvatarGroup>
                   </TableCell>
                   <TableCell>
-                    {row.status === "Đã xử lý" ? (
+                    {row.status === "Đã giao hàng" ? (
                       <Box
                         backgroundColor="green"
                         width="80%"
@@ -103,7 +103,9 @@ export default function OrderListPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    {row?.cartItems?.reduce((acc, item) => acc + item.price, 0)}{" "}
+                    {formatPrice(
+                      row?.cartItems?.reduce((acc, item) => acc + item.price, 0)
+                    )}{" "}
                     VND
                   </TableCell>
                 </TableRow>

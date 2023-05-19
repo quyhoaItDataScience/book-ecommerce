@@ -12,7 +12,10 @@ router.post(
   productCtrl.addImage
 );
 router.get("/", productCtrl.getProducts);
+router.get("/category/:categorySlug", productCtrl.getProductsByCategory);
 router.get("/admin", productCtrl.getProductsForAdmin);
+router.get("/:productId", productCtrl.getProductById);
+router.put("/:productId", productCtrl.updateProductById);
 router.delete("/:productId", productCtrl.deleteProduct);
 router.delete("/product-image/:imageId", productCtrl.deleteProductImage);
 

@@ -16,6 +16,8 @@ import {
   TextField,
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
+import productApi from "../../api/productApi";
+import { toast } from "react-toastify";
 
 const itemData = [
   {
@@ -34,6 +36,7 @@ const itemData = [
 
 export default function CardBookAdmin({ book }) {
   const [open, setOpen] = React.useState(false);
+  const [updatedBook, setUpdatedBook] = React.useState(book);
 
   const handleClose = () => {
     setOpen(false);
@@ -46,20 +49,36 @@ export default function CardBookAdmin({ book }) {
   const deleteImage = () => {
     console.log("delete img");
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedBook((prevBook) => ({
+      ...prevBook,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdate = async () => {
+    const res = await productApi.updateBookById(updatedBook._id, updatedBook);
+    if (res && res.msg) {
+      toast.success(res.msg);
+    }
+  };
+
   return (
     <>
       <Card sx={{ maxWidth: 345 }}>
         <CardMedia
           sx={{ height: 200, objectFit: "contain" }}
-          image={`${book?.publicUrl}`}
+          image={`${updatedBook?.publicUrl}`}
           title="green iguana"
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {book?.name || "Head First Java"}
+            {updatedBook?.name || "Head First Java"}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {book?.description?.substring(0, 50)}
+            {updatedBook?.description?.substring(0, 50)}
           </Typography>
         </CardContent>
         <CardActions>
@@ -82,44 +101,71 @@ export default function CardBookAdmin({ book }) {
         >
           <Box display="flex" flexDirection="column" paddingY={3} width="50%">
             <TextField
-              label="book-title"
-              id="book-title"
+              label="Title"
+              id="updatedBook-title"
+              name="title"
               sx={{ m: 1, width: "50%" }}
-              value={book?.name}
+              value={updatedBook?.name}
+              onChange={handleChange}
               fullWidth={true}
             />
             <TextField
               label="Author"
               id="author"
+              name="authorName"
+              onChange={handleChange}
               sx={{ m: 1, width: "50%" }}
-              value={book?.authorName}
+              value={updatedBook?.authorName}
               fullWidth={true}
             />
             <TextField
-              label="book-price"
+              label="Price"
               id="book-price"
               type="number"
+              name="price"
+              onChange={handleChange}
               sx={{ m: 1, width: "50%" }}
-              value={book?.price}
+              value={updatedBook?.price}
               fullWidth={true}
             />
             <TextField
-              label="book-description"
+              label="Category"
+              id="book-category"
+              type="text"
+              name="category"
+              onChange={handleChange}
+              sx={{ m: 1, width: "50%" }}
+              value={updatedBook?.category || "Chưa có category"}
+              fullWidth={true}
+            />
+            <TextField
+              label="Description"
               id="book-description"
+              name="description"
+              onChange={handleChange}
               sx={{ m: 1, width: "100%" }}
-              value={book?.description}
+              value={updatedBook?.description}
               multiline={true}
               minRows={3}
               fullWidth={true}
+            />
+            <TextField
+              label="Public Url"
+              id="book-publicUrl"
+              name="publicUrl"
+              onChange={handleChange}
+              sx={{ m: 1 }}
+              value={updatedBook?.publicUrl}
             />
           </Box>
           <Box display="flex" gap="10px">
             {itemData.map((item, idx) => (
               <Box position="relative">
                 <img
-                  src={itemData[0].img}
+                  src={book?.publicUrl ?? itemData[0]?.img}
                   style={{
                     maxWidth: "100%",
+                    objectFit: "cover",
                     height: "100px",
                   }}
                 />
@@ -136,7 +182,11 @@ export default function CardBookAdmin({ book }) {
               </Box>
             ))}
           </Box>
-          <Button variant="contained">Update product</Button>
+          <Box margin="20px 0">
+            <Button variant="contained" onClick={handleUpdate}>
+              Update product
+            </Button>
+          </Box>
         </Paper>
       </Modal>
     </>

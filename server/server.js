@@ -10,6 +10,7 @@ require("dotenv").config();
 const connectDB = require("./config/connectDB");
 const morgan = require("morgan");
 const insertData = require("./config/createData");
+const errorHandler = require("./middleware/errorHandler");
 require("./config/cloudinary");
 
 const app = express();
@@ -17,6 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
+app.use(errorHandler);
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);

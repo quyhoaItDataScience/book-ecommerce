@@ -14,7 +14,7 @@ import { InboxOutlined, FacebookOutlined } from "@mui/icons-material";
 
 function Footer() {
   return (
-    <Box backgroundColor="#212121" padding={4}>
+    <Box backgroundColor="#212121" padding={4} minHeight="50px">
       <Container maxWidth="lg">
         <Grid container>
           <Grid item xs={12} md={6}>

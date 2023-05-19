@@ -22,6 +22,24 @@ const productApi = {
       toast.error(err.response.data.msg);
     }
   },
+  getBookById: async (bookId) => {
+    try {
+      const response = await axiosClient.get(`/products/${bookId}`);
+      return response;
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  updateBookById: async (bookId, book) => {
+    try {
+      const response = await axiosClient.put(`/products/${bookId}`, {
+        ...book,
+      });
+      return response;
+    } catch (err) {
+      console.log(err);
+    }
+  },
 };
 
 export default productApi;

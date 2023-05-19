@@ -15,6 +15,7 @@ function useProductFilter() {
       try {
         const searchQuery = handleRoute(page, category);
         console.log(searchQuery);
+        return;
         const res = await axiosClient.get(`/products/${searchQuery}`);
         setProducts(res.data);
         setTotalPage(res.totalPages);
