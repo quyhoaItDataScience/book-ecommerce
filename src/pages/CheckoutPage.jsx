@@ -19,12 +19,11 @@ import * as yup from "yup";
 import { useAuthCtx } from "../context/AuthContext";
 import orderApi from "../api/orderApi";
 import { useNavigate } from "react-router-dom";
-import jwtDecode from "jwt-decode";
 
 function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState(1);
   const { cartItems, cartTotal, setCartItems } = useCartContext();
-  const { token } = useAuthCtx();
+  const { user } = useAuthCtx();
   const navigate = useNavigate();
 
   const formik = useFormik({
@@ -46,8 +45,7 @@ function CheckoutPage() {
       values["paymentMethod"] = paymentMethod;
       values["cartItems"] = cartItems.map((item) => item._id);
       values["cartTotal"] = cartTotal;
-      const { id: userId } = jwtDecode(token);
-      await orderApi.createOrder(userId, values);
+      await orderApi.createOrder(user._id, values);
       setCartItems([]);
       navigate("/checkout/success");
     },

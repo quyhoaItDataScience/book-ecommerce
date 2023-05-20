@@ -14,8 +14,18 @@ const productApi = {
   },
   getBooks: async () => {
     try {
-      const response = await axiosClient.get("/products/admin");
+      const response = await axiosClient.get("/products/recent");
       console.log("getBooks", response);
+      return response;
+    } catch (err) {
+      console.log(err);
+      toast.error(err.response.data.msg);
+    }
+  },
+  getBooksForAdmin: async () => {
+    try {
+      const response = await axiosClient.get("/products/admin");
+      console.log("getBooksForAdmin", response);
       return response;
     } catch (err) {
       console.log(err);

@@ -103,7 +103,7 @@ function Footer() {
                   },
                 }}
               >
-                <Typography color="inherit">Blog</Typography>
+                <Typography color="inherit">Profile</Typography>
               </ListItem>
               <ListItem
                 disablePadding
@@ -113,9 +113,7 @@ function Footer() {
                   },
                 }}
               >
-                <Typography color="inherit">
-                  Tôi tạo ra web này chỉ để pass sách
-                </Typography>
+                <Typography color="inherit">Github</Typography>
               </ListItem>
             </List>
           </Grid>

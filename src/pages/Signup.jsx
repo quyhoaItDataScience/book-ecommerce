@@ -9,9 +9,11 @@ import authApi from "../api/authApi";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useAuthCtx } from "../context/AuthContext";
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const { setUser } = useAuthCtx();
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -19,19 +21,19 @@ export default function SignIn() {
     },
     validationSchema: Yup.object({
       username: Yup.string()
-        .required("Vui lòng nhập tên đăng nhập")
+        .required("Vui lòng nhập username")
         .min(6, "Tên đăng nhập phải có ít nhất 6 kí tự"),
       password: Yup.string()
         .required("Vui lòng nhập mật khẩu")
-        .min(8, "Mật khẩu phải có ít nhất 8 kí tự"),
+        .min(6, "Mật khẩu phải có ít nhất 6 kí tự"),
     }),
     onSubmit: async (values) => {
       const res = await authApi.signup({
         username: values.username,
         password: values.password,
       });
-      console.log("res", res);
-      console.log(values);
+      localStorage.setItem("token", JSON.stringify(res.token));
+      setUser(res.user);
       navigate("/");
     },
   });

@@ -7,8 +7,6 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import categoryApi from "../../api/categoryApi";
-import useProductFilter from "../../hooks/productsHook";
-import categories from "../../mockData/mockCategories";
 
 function Categories({ setCategory }) {
   const [categories, setCategories] = useState([]);
@@ -26,15 +24,36 @@ function Categories({ setCategory }) {
       <Typography variant="h6">Danh mục</Typography>
       <Divider variant="fullWidth" />
       <List>
+        <ListItem>
+          <ListItemText
+            onClick={() => {
+              setCategory({
+                name: "Tất cả",
+                slug: "Tat-ca",
+              });
+            }}
+            primary="Tất cả"
+            sx={{
+              "&:hover": {
+                color: "primary.main",
+                cursor: "pointer",
+              },
+            }}
+          />
+        </ListItem>
+        <Divider />
         {categories?.map((cate) => (
-          <div key={cate._id}>
+          <div key={cate?._id}>
             <ListItem>
               <ListItemText
                 onClick={() => {
-                  setCategory(cate.name);
-                  console.log(cate.name);
+                  setCategory({
+                    name: cate?.name,
+                    slug: cate?.slug,
+                  });
+                  console.log(cate?.slug);
                 }}
-                primary={cate.name}
+                primary={cate?.name}
                 sx={{
                   "&:hover": {
                     color: "primary.main",

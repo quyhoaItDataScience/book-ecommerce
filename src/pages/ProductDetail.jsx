@@ -41,7 +41,7 @@ function ProductDetail() {
         <Grid item sm={12} md={4} my={5}>
           <Box height="300px" width="300px">
             <img
-              src={productImg[activeThumb]}
+              src={product?.publicUrl}
               alt="product image"
               style={{
                 maxWidth: "100%",
@@ -50,39 +50,41 @@ function ProductDetail() {
               }}
             />
           </Box>
-          <Box
-            width="300px"
-            height="120px"
-            sx={{
-              "& .swiper-button-prev": {
-                left: "0",
-              },
-            }}
-          >
-            <Swiper
-              spaceBetween={10}
-              slidesPerView={3}
-              onSlideChange={() => console.log("slide change")}
-              onSwiper={(swiper) => console.log(swiper)}
-              style={{
-                width: "100%",
-                height: "100%",
+          {product?.images > 0 && (
+            <Box
+              width="300px"
+              height="120px"
+              sx={{
+                "& .swiper-button-prev": {
+                  left: "0",
+                },
               }}
             >
-              {productImg.map((item, idx) => (
-                <SwiperSlide key={idx} onClick={() => setActiveThumb(idx)}>
-                  <img
-                    src={item}
-                    alt="product image"
-                    style={{
-                      maxWidth: "100%",
-                      height: "100%",
-                    }}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </Box>
+              <Swiper
+                spaceBetween={10}
+                slidesPerView={3}
+                onSlideChange={() => console.log("slide change")}
+                onSwiper={(swiper) => console.log(swiper)}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
+                {productImg.map((item, idx) => (
+                  <SwiperSlide key={idx} onClick={() => setActiveThumb(idx)}>
+                    <img
+                      src={item}
+                      alt="product image"
+                      style={{
+                        maxWidth: "100%",
+                        height: "100%",
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </Box>
+          )}
         </Grid>
         <Grid item sm={12} md={8} my={5}>
           <Typography variant="h4">{product?.name}</Typography>

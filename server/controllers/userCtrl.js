@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const cloudinary = require("cloudinary").v2;
 const CloudinaryImage = require("../models/CloudinaryImage");
 
-const handleProfileImage = async (file) => {
+const createProfileImage = async (file) => {
   const { public_id, secure_url } = await cloudinary.uploader.upload(
     file.path,
     { folder: "ecommerce" }
@@ -21,8 +21,9 @@ const deleteImage = async (file) => {
   try {
     const oldImage = await CloudinaryImage.findByIdAndDelete(file._id);
     await cloudinary.uploader.destroy(oldImage.publicId);
+    return true;
   } catch (err) {
-    console.log(err);
+    return false;
   }
 };
 
@@ -38,45 +39,38 @@ module.exports = {
     res.status(200).json(user);
   },
   verifyUser: async (req, res) => {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user).populate("profileImage");
     res.status(200).json(user);
   },
   deleteAll: async (req, res) => {
-    await User.deleteMany();
+    // await User.deleteMany();
     res.json({ msg: "Deleted All" });
   },
   deleteUserImage: async (req, res) => {
-    const { userId } = req.body;
-    console.log(userId);
-    res.json({ msg: "Tính năng chưa hoàn thành" });
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(400).json({ msg: "Something wrong" });
+    if (!user.profileImage) {
+      return res.status(400).json({ msg: "Không thể xoá ảnh mặc định" });
+    }
+    const isDeleted = deleteImage(user.profileImage._id);
+    user.profileImage = null;
+    await user.save();
+    if (!isDeleted) return res.status(500).json({ msg: "Lỗi xoá" });
+    res.status(200).json({ msg: "Đã xoá user image" });
   },
   deleteUser: async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.userId);
     if (user.profileImage) {
-      const imageOfUser = await CloudinaryImage.findByIdAndDelete(
-        user.profileImage._id
-      );
-      await cloudinary.uploader.destroy(imageOfUser.publicId);
+      deleteImage(user.profileImage._id);
     }
     res.status(200).json({
-      msg: "Deleted successfully",
+      msg: `Deleted ${user.username}`,
     });
   },
   updateUser: async (req, res) => {
-    const { password } = req.body;
-    // if user has already had profileImage, delete it before update
-    const user = await User.findById(req.params.userId);
-    if (req.file) {
-      const profileImage = await handleProfileImage(req.file);
-      if (user.profileImage) {
-        await deleteImage(user.profileImage);
-      }
-      user.profileImage = profileImage;
-      await user.save();
-      return res.status(201).json(user);
-    }
+    const { password, name } = req.body;
     if (password) {
-      let hashPass = await bcrypt.hash(password, 10);
+      const hashPass = await bcrypt.hash(password, 10);
       const user = await User.findByIdAndUpdate(
         req.params.userId,
         {
@@ -87,22 +81,30 @@ module.exports = {
         },
         { new: true }
       );
-      res.status(200).json(user);
-    } else {
-      const user = await User.findByIdAndUpdate(
-        req.params.userId,
-        {
-          $set: { ...req.body },
-        },
-        { new: true }
-      );
-
-      if (!user) {
-        return res.status(401).json({
-          msg: "Người dùng này không tồn tại",
-        });
-      }
-      res.status(200).json(user);
+      return res
+        .status(200)
+        .json({ data: user, msg: "Cập nhật mật khẩu thành công" });
     }
+    const user = await User.findByIdAndUpdate(
+      req.params.userId,
+      {
+        $set: { name },
+      },
+      { new: true }
+    );
+    res.status(200).json({ data: user, msg: "Cập nhật thành công" });
+  },
+  updateUserImage: async (req, res) => {
+    const user = await User.findById(req.params.userId);
+    if (!req.file) {
+      return res.status(400).json({ msg: "Vui lòng chọn ảnh" });
+    }
+    const profileImage = await createProfileImage(req.file);
+    if (user.profileImage) {
+      await deleteImage(user.profileImage._id);
+    }
+    user.profileImage = profileImage;
+    await user.save();
+    return res.status(201).json(profileImage);
   },
 };

@@ -12,5 +12,11 @@ router.get("/:userId", userCtrl.getUser);
 router.delete("/", userCtrl.deleteAll);
 router.delete("/:userId", userCtrl.deleteUser);
 router.put("/:userId", upload.single("profileImage"), userCtrl.updateUser);
+router.put(
+  "/image/:userId",
+  upload.single("profileImage"),
+  userCtrl.updateUserImage
+);
+router.delete("/image/:userId", userCtrl.deleteUserImage);
 
 module.exports = router;

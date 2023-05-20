@@ -12,6 +12,7 @@ router.post(
   productCtrl.addImage
 );
 router.get("/", productCtrl.getProducts);
+router.get("/recent", productCtrl.getRecentProducts);
 router.get("/category/:categorySlug", productCtrl.getProductsByCategory);
 router.get("/admin", productCtrl.getProductsForAdmin);
 router.get("/:productId", productCtrl.getProductById);

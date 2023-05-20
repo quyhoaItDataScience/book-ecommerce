@@ -158,30 +158,32 @@ export default function CardBookAdmin({ book }) {
               value={updatedBook?.publicUrl}
             />
           </Box>
-          <Box display="flex" gap="10px">
-            {itemData.map((item, idx) => (
-              <Box position="relative">
-                <img
-                  src={book?.publicUrl ?? itemData[0]?.img}
-                  style={{
-                    maxWidth: "100%",
-                    objectFit: "cover",
-                    height: "100px",
-                  }}
-                />
-                <IconButton
-                  sx={{
-                    position: "absolute",
-                    right: "-10px",
-                    top: "-20px",
-                  }}
-                  onClick={deleteImage}
-                >
-                  <CloseOutlined />
-                </IconButton>
-              </Box>
-            ))}
-          </Box>
+          {updatedBook?.images.length > 0 && (
+            <Box display="flex" gap="10px">
+              {itemData.map((item, idx) => (
+                <Box position="relative">
+                  <img
+                    src={book?.publicUrl ?? itemData[0]?.img}
+                    style={{
+                      maxWidth: "100%",
+                      objectFit: "cover",
+                      height: "100px",
+                    }}
+                  />
+                  <IconButton
+                    sx={{
+                      position: "absolute",
+                      right: "-10px",
+                      top: "-20px",
+                    }}
+                    onClick={deleteImage}
+                  >
+                    <CloseOutlined />
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
+          )}
           <Box margin="20px 0">
             <Button variant="contained" onClick={handleUpdate}>
               Update product

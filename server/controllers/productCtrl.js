@@ -108,57 +108,23 @@ module.exports = {
 
     res.json({ product, deletedImages });
   },
+  getRecentProducts: async (req, res) => {
+    const products = await Product.find().limit(4);
+    res.status(200).json(products);
+  },
   getProducts: async (req, res) => {
-    const { page, category } = req.query;
-    const find = await Product.aggregate([
-      {
-        $lookup: {
-          from: "categories",
-          let: { categoryId: "$category" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$$categoryId", "$_id"] },
-                    { $eq: ["$name", category] },
-                  ],
-                },
-              },
-            },
-            {
-              $project: {
-                _id: 1,
-                name: 1,
-              },
-            },
-          ],
-          as: "categoryDetails",
-        },
-      },
-      {
-        $match: {
-          categoryDetails: { $ne: [] },
-        },
-      },
-    ]).skip(1);
+    const { page } = req.query;
 
-    res.json(find);
-    return;
-    const pageSize = 2;
+    const pageSize = 3;
 
     const totalProducts = await Product.countDocuments();
     const totalPages = Math.ceil(totalProducts / pageSize);
     let products;
-    if (category === "all") {
-      products = await Product.find()
-        .skip((page - 1) * pageSize)
-        .limit(pageSize);
-    } else {
-      products = await Product.find({ category })
-        .skip((page - 1) * pageSize)
-        .limit(pageSize);
-    }
+
+    products = await Product.find({})
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+
     res.status(200).json({
       data: products,
       totalPages: totalPages,

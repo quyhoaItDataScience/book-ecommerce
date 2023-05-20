@@ -6,8 +6,6 @@ module.exports = {
     // /api/order/:userId
     const { fullname, phone, address, paymentMethod, cartItems, totalPrice } =
       req.body;
-    console.log(req.body);
-    console.log(req.params);
 
     await User.findByIdAndUpdate(req.params.userId, {
       $set: { name: fullname },

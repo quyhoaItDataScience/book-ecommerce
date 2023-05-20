@@ -17,9 +17,8 @@ export function formatPrice(priceStr) {
   return new Intl.NumberFormat().format(res);
 }
 
-export function handleRoute(page, category) {
+export function handleRoute(page) {
   const url = new URLSearchParams();
   if (page) url.set("page", page);
-  url.set("category", category);
   return "?" + url.toString();
 }

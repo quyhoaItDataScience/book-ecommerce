@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import authApi from "../api/authApi";
-import jwtDecode from "jwt-decode";
 import userApi from "../api/userApi";
 import { toast } from "react-toastify";
 
@@ -13,7 +11,6 @@ const tokenFromLs = () => {
 };
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLogged, setIsLogged] = useState(false);
   useEffect(() => {
     const getUser = async () => {
       if (tokenFromLs()) {

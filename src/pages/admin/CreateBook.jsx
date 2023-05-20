@@ -83,8 +83,10 @@ function CreateBook() {
   };
 
   return (
-    <>
-      <Typography variant="h5">Create book</Typography>
+    <Box margin="20px 0">
+      <Typography variant="h5" align="center">
+        Create book
+      </Typography>
       <Box
         sx={{
           backgroundColor: "#fff",
@@ -181,7 +183,7 @@ function CreateBook() {
           </Button>
         </Box>
       </Box>
-    </>
+    </Box>
   );
 }
 

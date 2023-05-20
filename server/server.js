@@ -9,7 +9,6 @@ const cors = require("cors");
 require("dotenv").config();
 const connectDB = require("./config/connectDB");
 const morgan = require("morgan");
-const insertData = require("./config/createData");
 const errorHandler = require("./middleware/errorHandler");
 require("./config/cloudinary");
 
@@ -26,9 +25,6 @@ app.use("/api/products", productRouter);
 app.use("/api/image", imageRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/orders", orderRouter);
-app.post("/api/add-product", async (req, res) => {
-  res.json(products);
-});
 
 app.listen(8000, async () => {
   connectDB().then(() => {});

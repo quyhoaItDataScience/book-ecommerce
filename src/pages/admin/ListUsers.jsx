@@ -9,9 +9,10 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { Button } from "@mui/material";
 import userApi from "../../api/userApi";
+import { toast } from "react-toastify";
 
 const columns = [
-  { id: "name", label: "Tên", minWidth: 100 },
+  { id: "username", label: "Tên", minWidth: 100 },
   {
     id: "orderCount",
     label: "Số đơn hàng",
@@ -73,10 +74,14 @@ export default function StickyHeadTable() {
     setPage(0);
   };
 
-  const handleDelete = (row) => {
+  const handleDelete = async (row) => {
     const newUsers = users.filter((user) => user._id !== row._id);
     setUsers(newUsers);
     // call api delete user
+    const res = await userApi.deleteUser(row._id);
+    if (res && res.msg) {
+      toast.success(res.msg);
+    }
   };
 
   return (

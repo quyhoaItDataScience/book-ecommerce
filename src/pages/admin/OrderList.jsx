@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import orderApi from "../../api/orderApi";
 import { Button } from "@mui/material";
+import moment from "moment";
 
 const generateOrders = (numOfOrders) => {
   let orders = [];
@@ -59,7 +60,7 @@ const OrderList = () => {
           <tr key={order?._id}>
             <td>{order?._id}</td>
             <td>{order?.orderedBy?.name}</td>
-            <td>{order?.orderDate}</td>
+            <td>{moment(order?.orderDate).format("DD/MM/YYYY, h:mm a")}</td>
 
             <td>{order?.status}</td>
 

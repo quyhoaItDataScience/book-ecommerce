@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
   },
   ipAddress: {
     type: String,
-    default: "0.0.0.0",
+    default: "127.0.0.1",
   },
 });
 

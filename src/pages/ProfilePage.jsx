@@ -8,63 +8,69 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import userApi from "../api/userApi";
 import { useAuthCtx } from "../context/AuthContext";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import jwtDecode from "jwt-decode";
+import { toast } from "react-toastify";
 
 const avatarImage = "https://mui.com/static/images/avatar/1.jpg";
 
 function ProfilePage() {
-  const { token } = useAuthCtx();
-  const { user } = useAuthCtx();
+  const { user, setUser } = useAuthCtx();
   const [loading, setLoading] = useState(false);
 
   const validationSchema = yup.object({
     name: yup.string("Nhập tên"),
-    username: yup.string().min(6, "Ít nhất 6 ký tự").required("Email bắt buộc"),
-    password: yup
-      .string("Enter your password")
-      .min(8, "Mật khẩu từ 6 ký ")
-      .required("Mật khẩu bắt buộc"),
   });
 
   const formik = useFormik({
     initialValues: {
       name: user?.name,
-      username: user?.username,
       password: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      setLoading(true);
+      const res = await updateUser(user._id, values);
+      console.log(res);
+      if (res && res.msg) {
+        toast.success(res.msg);
+      }
+      setLoading(false);
     },
   });
-  console.log(formik.values);
 
   const updateImage = async (e) => {
     const data = new FormData();
     data.append("profileImage", e.target.files[0]);
     setLoading(true);
-    const res = await userApi.updateImage(user._id, data);
-    setUser({ ...user, profileImage: res.profileImage });
+    const res = await userApi.updateUserImage(user._id, data);
+    console.log(res);
+    setUser({ ...user, profileImage: res });
     setLoading(false);
     console.log("update image");
   };
 
   const deleteImage = async () => {
-    const res = await userApi.deleteImage(user?.profileImage._id, {
-      userId: user._id,
-    });
-    console.log(res);
+    setLoading(true);
+    const res = await userApi.deleteImage(user._id);
+    setLoading(false);
+    if (res?.msg) toast.success(res.msg);
+    else {
+      if (res?.response?.data) {
+        toast.error(res.response.data.msg);
+      } else {
+        toast.error(res.message);
+      }
+    }
+    setUser({ ...user, profileImage: null });
   };
 
-  const handleUpdateUser = async () => {
-    const res = await userApi.updateUser(user._id, user);
+  const updateUser = async (userId, payload) => {
+    const res = await userApi.updateUser(userId, payload);
     const { profileImage, ...other } = res;
-    console.log(other);
     const oldImage = user.profileImage;
     setUser({ ...other, profileImage: oldImage });
   };
@@ -72,7 +78,7 @@ function ProfilePage() {
   return (
     <Container>
       <Box my={2}>
-        <Typography variant="h5" textAlign="center">
+        <Typography variant="h4" textAlign="center">
           Thông tin cá nhân
         </Typography>
 
@@ -121,7 +127,7 @@ function ProfilePage() {
               Họ tên
             </FormLabel>
             <TextField
-              id="fullname"
+              id="name"
               value={formik.values.name}
               onChange={formik.handleChange}
               error={formik.touched.name && Boolean(formik.errors.name)}
@@ -130,7 +136,7 @@ function ProfilePage() {
           </FormControl>
           <FormControl>
             <FormLabel
-              htmlFor="email"
+              htmlFor="username"
               sx={{
                 fontWeight: "bold",
               }}
@@ -138,7 +144,7 @@ function ProfilePage() {
               Username
             </FormLabel>
             <TextField
-              id="email"
+              id="username"
               value={user?.username}
               handleChange={formik.handleChange}
               InputProps={{
@@ -161,7 +167,8 @@ function ProfilePage() {
             <TextField
               type="password"
               id="password"
-              defaultValue={formik.values.password}
+              value={formik.values.password}
+              onChange={formik.handleChange}
             />
           </FormControl>
 
@@ -185,7 +192,7 @@ function ProfilePage() {
               }}
             />
           </FormControl>
-          <Button variant="contained" type="submit">
+          <Button disabled={loading} variant="contained" type="submit">
             Cập nhật
           </Button>
         </Box>

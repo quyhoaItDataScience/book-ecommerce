@@ -10,7 +10,7 @@ axiosClient.interceptors.response.use(
   },
   (err) => {
     if (!err.response) {
-      alert("Err! Netword err!");
+      console.log("Err! Netword err!");
     }
     throw err;
   }

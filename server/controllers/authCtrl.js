@@ -4,6 +4,8 @@ const generateToken = require("../utils/generateToken");
 module.exports = {
   signup: async (req, res) => {
     try {
+      const ipAddress = req.ip !== "::1" ? req.ip : "127.0.0.1";
+
       const { username } = req.body;
       if (!username) {
         return res.status(401).json({
@@ -24,6 +26,7 @@ module.exports = {
       const newUser = new User({
         username,
         password: hashPass,
+        ipAddress,
       });
       await newUser.save();
 
@@ -36,21 +39,25 @@ module.exports = {
   login: async (req, res) => {
     const { username, password } = req.body;
 
-    const emailExist = await User.findOne({ username }).populate(
+    const usernameExist = await User.findOne({ username }).populate(
       "profileImage"
     );
-    if (!emailExist) {
-      return res.status(401).json({ msg: "Email chưa đăng ký" });
+    if (!usernameExist) {
+      return res.status(401).json({ msg: "Username chưa đăng ký" });
     }
-    const isPasswordCorrect = bcrypt.compareSync(password, emailExist.password);
+    const isPasswordCorrect = bcrypt.compareSync(
+      password,
+      usernameExist.password
+    );
 
     if (!isPasswordCorrect) {
       return res.status(401).json({ msg: "Mật khẩu không đúng" });
     }
-    const token = generateToken({ id: emailExist._id });
+    const token = generateToken({ id: usernameExist._id });
     return res.status(201).json({
       token,
-      user: emailExist,
+      user: usernameExist,
+      ipAddress: req.ip,
     });
   },
 };

@@ -7,7 +7,7 @@ function ListBooks() {
   const [books, setBooks] = useState([]);
   useEffect(() => {
     const getBooks = async () => {
-      const res = await productApi.getBooks();
+      const res = await productApi.getBooksForAdmin();
       console.log(res);
       setBooks(res);
     };

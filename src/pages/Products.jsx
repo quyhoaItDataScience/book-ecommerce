@@ -14,8 +14,15 @@ import CardBook from "../components/common/CardBook";
 import useProductFilter from "../hooks/productsHook";
 
 function Products() {
-  const { products, setProducts, totalPage, page, setPage, setCategory } =
-    useProductFilter();
+  const {
+    products,
+    setProducts,
+    totalPage,
+    page,
+    setPage,
+    category,
+    setCategory,
+  } = useProductFilter();
   const [sortBy, setSortBy] = useState("");
 
   const [select, setSelect] = useState("price-ascending");
@@ -56,7 +63,7 @@ function Products() {
             alignItems="center"
             gap="10px"
           >
-            <Typography variant="h6">Tất cả</Typography>
+            <Typography variant="h6">{category?.name ?? "Tất cả"}</Typography>
             <Box display="flex" alignItems="center" gap="10px">
               <Typography>Sắp xếp</Typography>
               <FormControl size="small">
@@ -80,14 +87,16 @@ function Products() {
               </Grid>
             ))}
           </Grid>
-          <Box display="flex" justifyContent="center" mt={3}>
-            <Pagination
-              count={totalPage}
-              page={page}
-              color="primary"
-              onChange={handlePagination}
-            />
-          </Box>
+          {page != 0 && (
+            <Box display="flex" justifyContent="center" mt={3}>
+              <Pagination
+                count={totalPage}
+                page={page}
+                color="primary"
+                onChange={handlePagination}
+              />
+            </Box>
+          )}
         </Box>
       </Box>
     </Container>

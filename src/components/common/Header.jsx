@@ -73,15 +73,16 @@ function Header() {
           {/* <SearchInput /> */}
           <Box>
             <Button>
-              <Badge badgeContent={cartItems.length} showZero color="secondary">
+              <Badge badgeContent={cartItems.length} showZero color="info">
                 <ShoppingCartIcon
-                  color="warning"
+                  htmlColor="#abdbe3"
+                  size="large"
                   onClick={() => handleNavigate("/cart")}
                 />
               </Badge>
             </Button>
             <IconButton onClick={handleClick}>
-              <PersonIcon color="error" />
+              <PersonIcon htmlColor="#fff" />
               <Typography variant="body1" color="white">
                 {user?.username}
               </Typography>
